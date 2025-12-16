@@ -191,6 +191,13 @@ export interface StaticHostingProps {
   errorResponsePagePath?: string;
 
   /**
+   * Set specific pages for supported error codes
+   *
+   * @default []
+   */
+  errorResponses?: ErrorResponse[];
+
+  /**
    * Create behaviours for the following file extensions to route straight to the S3 origin
    * js, css, json, svg, jpg, jpeg, png, gif, ico, woff, woff2, otf
    *
@@ -597,13 +604,14 @@ export class StaticHosting extends Construct {
         enableAcceptEncodingGzip: true,
       });
 
+    const extraErrorResponses = props.errorResponses || []
     const errorResponses: ErrorResponse[] = [
       {
         httpStatus: 404,
         responseHttpStatus: 200,
         responsePagePath: errorResponsePagePath,
         ttl: Duration.seconds(0),
-      },
+      }, ...extraErrorResponses
     ];
 
     let responseHeadersPolicy: IResponseHeadersPolicy | undefined;
